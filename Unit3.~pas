@@ -1,0 +1,78 @@
+unit Unit3;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Grids;
+
+type
+  TForm3 = class(TForm)
+    editMarks: TStringGrid;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+
+implementation
+
+uses Unit1, Unit2;
+
+{$R *.dfm}
+
+procedure TForm3.Button1Click(Sender: TObject);
+var
+  i,r:integer;
+begin
+  r:=0;
+  for i:=2 to Form1.StringGrid1.ColCount-2 do
+  begin
+    Form1.StringGrid1.Cells[i,sRow]:=editMarks.Cells[1,r];
+    r:=r+1;
+  end;
+  Form3.Close;
+end;
+
+procedure TForm3.FormActivate(Sender: TObject);
+var
+  c,r:integer;
+begin
+  r:=0;
+  editMarks.ColWidths[0]:=round(Form3.Width*0.8);
+  editMarks.ColWidths[1]:=round(Form3.Width*0.2);
+  Form3.Caption:=Form1.StringGrid1.Cells[1,sRow];
+  if editMarks.RowCount = 1 then
+  begin
+    for c:=2 to Form1.StringGrid1.ColCount-2 do
+    begin
+      editMarks.Cells[0,r]:=Form1.StringGrid1.Cells[c,0];
+      editMarks.RowCount:=editMarks.RowCount+1;
+      r:=r+1;
+    end;
+    editMarks.RowCount:=editMarks.RowCount-1;
+    editMarks.Height:=editMarks.RowCount*editMarks.DefaultRowHeight+20;
+    Form3.ClientHeight:=editMarks.Height+45;
+    Button1.Top:=editMarks.Height+10;
+  end
+  else
+  begin
+    r:=2;
+    for c:=0 to editMarks.RowCount-1 do
+    begin
+      if Length(Form1.StringGrid1.Cells[r,sRow]) > 0 then
+        editMarks.Cells[1,c]:=Form1.StringGrid1.Cells[r,sRow]
+      else
+        editMarks.Cells[1,c]:='';
+      r:=r+1;
+    end;
+  end;
+end;
+
+end.

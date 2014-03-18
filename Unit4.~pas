@@ -1,0 +1,345 @@
+unit Unit4;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, Menus;
+
+type
+  TForm4 = class(TForm)
+    students: TStringGrid;
+    OpenDialog1: TOpenDialog;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    N14: TMenuItem;
+    SaveDialog1: TSaveDialog;
+    MainMenu1: TMainMenu;
+    procedure FormActivate(Sender: TObject);
+    procedure studentsSelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure N6Click(Sender: TObject);
+    procedure N13Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
+    procedure N10Click(Sender: TObject);
+    procedure N11Click(Sender: TObject);
+    procedure N12Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
+    procedure N4Click(Sender: TObject);
+    procedure N5Click(Sender: TObject);
+    procedure N14Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form4: TForm4;
+  sRow:integer;
+  savePath:string;
+
+implementation
+
+uses
+  Unit1, Unit5, Unit2;
+var
+  cnt:integer;
+
+{$R *.dfm}
+
+procedure TForm4.FormActivate(Sender: TObject);
+var
+  i:integer;
+begin
+  gpList:=gpNum;
+  specList:=spec;
+  students.ColWidths[0]:=30;
+  students.ColWidths[1]:=221;
+  students.Cells[0,0]:='№';
+  students.Cells[1,0]:='Прізвище та ініціали студента';
+  students.Cells[0,1]:='1';
+  students.Cells[0,2]:='2';
+  if Length(Form1.StringGrid1.Cells[1,1]) > 0 then
+  begin
+    students.RowCount:=Form1.StringGrid1.RowCount;
+    for i:=1 to Form1.StringGrid1.RowCount-1 do
+    begin
+      students.Cells[0,i]:=IntToStr(i);
+      students.Cells[1,i]:=Form1.StringGrid1.Cells[1,i];
+    end;
+    cnt:=StrToInt(students.Cells[0,students.RowCount-1])+1;
+  end;   
+  savePath:=ExtractFilePath(Application.ExeName)+'groups/'+IntToStr(gpNum)+spec+'.txt';
+end;
+
+procedure TForm4.studentsSelectCell(Sender: TObject; ACol, ARow: Integer;
+  var CanSelect: Boolean);
+begin
+  sRow:=ARow;
+  if Arow = students.RowCount-1 then
+    begin
+      students.RowCount:=students.RowCount+1;
+      students.Cells[0,students.RowCount-1]:=IntToStr(cnt);
+      Inc(cnt,1);
+    end;
+  if (Length(students.Cells[1,students.RowCount-2]) = 0)
+    and (Length(students.Cells[1,students.RowCount-3]) = 0)
+    and (students.RowCount > 3) then
+    begin
+      students.RowCount:=students.RowCount-1;
+      //students.Cells[0,students.RowCount-1]:='';
+      Inc(cnt,-1);
+    end;
+      //ShowMessage(IntToStr(Length(students.Cells[1,students.RowCount-2])));
+end;
+
+procedure TForm4.FormCreate(Sender: TObject);
+begin
+  cnt:=3;
+  sRow:=1;
+end;
+
+procedure TForm4.N6Click(Sender: TObject);
+begin
+  Form4.Close;
+end;
+
+procedure TForm4.N13Click(Sender: TObject);
+var
+  i,j:integer;
+  coord:TGridRect;
+begin
+  coord.Left:=1;
+  coord.Right:=1;
+  coord.Top:=1;
+  coord.Bottom:=1;
+  students.Selection:=coord;
+  for i:=0 to 1 do
+    for j:=1 to students.RowCount-1 do
+      students.Cells[i,j]:='';
+  students.RowCount:=3;
+  students.Cells[0,1]:='1';
+  students.Cells[0,2]:='2';
+  cnt:=3;
+  Form5.ShowModal;
+end;
+
+procedure TForm4.N9Click(Sender: TObject);
+var
+  i:integer;
+begin
+  i:=students.RowCount-1;
+  repeat
+    students.Cells[1,i]:=students.Cells[1,i-1];
+    Inc(i,-1);
+  until i = sRow;
+  students.Cells[1,sRow]:='';
+  for i:=1 to students.RowCount-1 do
+    students.Cells[0,i]:=IntToStr(i);
+  cnt:=StrToInt(students.Cells[0,students.RowCount-1])+1;
+end;
+
+procedure TForm4.N10Click(Sender: TObject);
+var
+  i:integer;
+begin
+  i:=students.RowCount-1;
+  repeat
+    students.Cells[1,i]:=students.Cells[1,i-1];
+    Inc(i,-1);
+  until i = sRow;
+  students.Cells[1,sRow+1]:='';
+  for i:=1 to students.RowCount-1 do
+    students.Cells[0,i]:=IntToStr(i);
+  cnt:=StrToInt(students.Cells[0,students.RowCount-1])+1;
+end;
+
+procedure TForm4.N11Click(Sender: TObject);
+var
+  i:integer;
+begin
+  //ShowMessage(students.Cells[1,sRow]);
+  if (sRow = students.RowCount-1) and (students.RowCount > 2) then
+  begin
+    students.Cells[1,sRow]:='';
+    students.RowCount:=students.RowCount-1;
+    sRow:=students.RowCount-1;
+    Exit;
+  end;
+  if students.RowCount > 2 then
+  begin
+    i:=sRow;
+    repeat
+      students.Cells[1,i]:=students.Cells[1,i+1];
+      Inc(i,1);
+    until i = students.RowCount-1;
+    for i:=1 to students.RowCount-1 do
+      students.Cells[0,i]:=IntToStr(i);
+    students.RowCount:=students.RowCount-1;
+  end; 
+  cnt:=StrToInt(students.Cells[0,students.RowCount-1])+1;
+end;
+
+procedure TForm4.N12Click(Sender: TObject);
+var
+  i,j:integer;
+  coord:TGridRect;
+begin
+  coord.Left:=1;
+  coord.Right:=1;
+  coord.Top:=1;
+  coord.Bottom:=1;
+  students.Selection:=coord;
+  for i:=0 to 1 do
+    for j:=1 to students.RowCount-1 do
+      students.Cells[i,j]:='';
+  students.RowCount:=3;
+  students.Cells[0,1]:='1';
+  students.Cells[0,2]:='2';
+  cnt:=3;
+end;
+
+procedure TForm4.N3Click(Sender: TObject);
+var
+  i:integer;
+  stList:TextFile;
+  str:string;
+begin
+  OpenDialog1.InitialDir:=ExtractFilePath(Application.ExeName)+'groups/';
+  with OpenDialog1 do
+    if Execute then
+    begin
+      AssignFile(stList,FileName);
+      savePath:=FileName;
+      students.RowCount:=2;
+    end
+    else
+      exit; 
+  for i:=1 to students.RowCount-1 do
+    students.Rows[i].Clear;
+  students.RowCount:=2;
+  {$I-}
+  Reset(stList);
+  {$I-}
+  if IOResult <> 0 then
+  begin
+    MessageBox(0,pChar('Не вдалося відкрити'),pChar('Помилка'),MB_OK+MB_ICONERROR);
+    Exit;
+  end;
+  i:=1;
+  repeat
+    readln(stList,str);
+    if Length(str) > 1 then
+    begin
+      students.Cells[1,i]:=str;
+      students.RowCount:=students.RowCount+1;
+      Inc(i,1);
+    end;
+  until eof(stList);
+  CloseFile(stList);
+
+  students.RowCount:=students.RowCount-1;
+   
+  for i:=1 to students.RowCount-1 do
+    students.Cells[0,i]:=IntToStr(i);
+  cnt:=StrToInt(students.Cells[0,students.RowCount-1])+1;
+end;
+
+procedure TForm4.N4Click(Sender: TObject);
+var
+  f:TextFile;
+  i:integer;
+begin
+  AssignFile(f,savePath);
+  {$I-}
+  Rewrite(f);
+  {$I-}
+  if IOResult <> 0 then
+  begin
+    MessageBox(0,pChar('Не вдалося зберегти'),pChar('Помилка'),MB_OK+MB_ICONERROR);
+    Exit;
+  end;
+  i:=1;
+  repeat
+    if Length(students.Cells[1,i]) > 0 then
+    begin
+      writeln(f,students.Cells[1,i]);
+      //ShowMessage(students.Cells[1,i]);
+    end;
+    Inc(i,1);
+  until i=students.RowCount-1;
+  CloseFile(f);
+  MessageBox(0,pChar('Файл збережено'),pChar('Повідомлення'),MB_OK+MB_ICONINFORMATION);
+end;
+
+procedure TForm4.N5Click(Sender: TObject);
+var
+  f:TextFile;
+  i:integer;
+begin
+  with SaveDialog1 do
+    if Execute then
+    begin
+      AssignFile(f,FileName);
+      savePath:=FileName;
+    end;
+  {$I-}
+  Rewrite(f);
+  {$I-}
+  if IOResult <> 0 then
+  begin
+    MessageBox(0,pChar('Не вдалося зберегти'),pChar('Помилка'),MB_OK+MB_ICONERROR);
+    Exit;
+  end;
+  i:=1;
+  repeat
+    if Length(students.Cells[1,i]) > 0 then
+    begin
+      writeln(f,students.Cells[1,i]);
+      //ShowMessage(students.Cells[1,i]);
+    end;
+    Inc(i,1);
+  until i=students.RowCount-1;
+  CloseFile(f);
+  MessageBox(0,pChar('Файл збережено'),pChar('Повідомлення'),MB_OK+MB_ICONINFORMATION);
+end;
+
+procedure TForm4.N14Click(Sender: TObject);
+var
+  i,chk:integer;
+begin
+  chk:=0;
+  Form1.StringGrid1.RowCount:=2;
+  for i:=1 to students.RowCount-1 do
+    if Length(students.Cells[1,i])>0 then
+    begin
+      Form1.StringGrid1.Cells[1,i]:=students.Cells[1,i];
+      Form1.StringGrid1.RowCount:=Form1.StringGrid1.RowCount+1;
+      Inc(chk,1);
+    end;  
+  for i:=1 to Form1.StringGrid1.RowCount-1 do
+    Form1.StringGrid1.Cells[0,i]:=IntToStr(i);
+  if chk > 0 then
+    Form1.StringGrid1.RowCount:=Form1.StringGrid1.RowCount-1
+  else
+  begin
+    Form1.StringGrid1.Cells[0,1]:='';
+    Form1.StringGrid1.Cells[1,1]:='';
+  end;
+  Form4.Close;
+end;
+
+end.
